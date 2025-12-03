@@ -1,3 +1,0 @@
-from django.db import models
-
-# Add models here if you want to extend user profiles later.
