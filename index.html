@@ -1,0 +1,50 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">AuthApp</a>
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav ms-auto">
+            
+              <li class="nav-item"><a class="nav-link" href="/login/">Login</a></li>
+              <li class="nav-item"><a class="nav-link" href="/register/">Register</a></li>
+            
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-4">
+      
+      
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h2>Login</h2>
+    <form method="post">
+      <input type="hidden" name="csrfmiddlewaretoken" value="cTkq6E1NrzefFwjcN6BWHknY7ATZl95GRH4t8ua3uc1HkLGRNBsdIMgUFUIJiKiO">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input class="form-control" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input class="form-control" name="password" type="password" required>
+      </div>
+      <button class="btn btn-success" type="submit">Login</button>
+    </form>
+    <p class="mt-3">No account? <a href="/register/">Register</a></p>
+  </div>
+</div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
