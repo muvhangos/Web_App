@@ -1,3 +1,6 @@
+
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Add models here if you want to extend user profiles later.
+class CustomUser(AbstractUser):
+    email_verified = models.BooleanField(default=False)

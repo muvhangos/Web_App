@@ -1,41 +1,36 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 
-def home(request):
-    return redirect('login')
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
+from django.contrib.auth import get_user_model
+from .forms import RegisterForm
+from .utils import generate_verification_link
 
 def register(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        if User.objects.filter(username=username).exists():
-            messages.error(request, 'Username already taken')
-            return redirect('register')
-        user = User.objects.create_user(username=username, password=password)
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+            link = request.build_absolute_uri(generate_verification_link(user))
+            send_mail("Verify Email", f"Click to verify: {link}", None, [user.email])
+            return render(request, "check_email.html")
+    else:
+        form = RegisterForm()
+    return render(request, "register.html", {"form": form})
+
+def verify_email(request, token):
+    signer = TimestampSigner()
+    User = get_user_model()
+    try:
+        unsigned = signer.unsign(token, max_age=86400)
+        user = User.objects.get(pk=unsigned)
+        user.email_verified=True
+        user.is_active=True
         user.save()
-        messages.success(request, 'Account created successfully! Please log in.')
-        return redirect('login')
-    return render(request, 'register.html')
-
-def user_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, user)
-            return redirect('dashboard')
-        else:
-            messages.error(request, 'Invalid credentials')
-    return render(request, 'login.html')
-
-@login_required
-def dashboard(request):
-    return render(request, 'dashboard.html')
-
-def user_logout(request):
-    logout(request)
-    return redirect('login')
+        return render(request,"verified_success.html")
+    except SignatureExpired:
+        return render(request,"verified_failed.html",{"error":"Expired"})
+    except:
+        return render(request,"verified_failed.html",{"error":"Invalid"})
